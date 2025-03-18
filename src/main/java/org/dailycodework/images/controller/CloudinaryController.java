@@ -37,21 +37,21 @@ public class CloudinaryController {
     public ResponseEntity<String> upload(@RequestParam MultipartFile multipartFile) throws IOException {
         BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
         if (bi == null) {
-            return new ResponseEntity<>("Image non valide!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Image not valid!", HttpStatus.BAD_REQUEST);
         }
         Map result = cloudinaryService.upload(multipartFile);
         Image image = new Image((String) result.get("original_filename"),
                 (String) result.get("url"),
                 (String) result.get("public_id"));
         imageService.save(image);
-        return new ResponseEntity<>("image ajoutée avec succès ! ", HttpStatus.OK);
+        return new ResponseEntity<>("image uploaded successfully ! ", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") int id) {
         Optional<Image> imageOptional = imageService.getOne(id);
         if (imageOptional.isEmpty()) {
-            return new ResponseEntity<>("n'existe pas", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("image not exist", HttpStatus.NOT_FOUND);
         }
         Image image = imageOptional.get();
         String cloudinaryImageId = image.getImageId();
@@ -61,7 +61,7 @@ public class CloudinaryController {
             return new ResponseEntity<>("Failed to delete image from Cloudinary", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         imageService.delete(id);
-        return new ResponseEntity<>("image supprimée !", HttpStatus.OK);
+        return new ResponseEntity<>("image deleted !", HttpStatus.OK);
     }
 
 }
